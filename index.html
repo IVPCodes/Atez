@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atez — Practice on the range</title>
+<meta name="description" content="Atez is an ethical hacking community. Learn offensive and defensive security in isolated, legal, purpose-built ranges.">
+<link rel="icon" href="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0E12;
+    --panel:#111820;
+    --panel-2:#141C25;
+    --line:#223038;
+    --text:#DCE6EC;
+    --muted:#7E8FA0;
+    --signal:#5EEAD4;   /* safe / practice trace */
+    --alert:#FFB454;    /* live / attack trace */
+    --danger:#FF6B6B;
+    --radius:2px;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:48px 48px;
+    background-position:-1px -1px;
+    background-attachment:fixed;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+
+  .wrap{
+    max-width:1140px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  ::selection{ background:var(--signal); color:#04120F; }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,14,18,0.86);
+    backdrop-filter: blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 28px;
+    max-width:1140px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    text-decoration:none;
+  }
+  .brand img{
+    width:34px; height:34px; border-radius:6px;
+    border:1px solid var(--line);
+  }
+  .brand-name{
+    font-family:var(--mono); font-weight:600; letter-spacing:0.06em;
+    font-size:16px; text-transform:uppercase;
+    color:var(--text);
+  }
+  .brand-name span{color:var(--signal);}
+  nav.links{ display:flex; gap:28px; }
+  nav.links a{
+    font-family:var(--mono); font-size:12.5px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--muted); text-decoration:none;
+    padding:6px 0; border-bottom:1px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.links a:hover{ color:var(--text); border-color:var(--signal); }
+  .nav-cta{
+    font-family:var(--mono); font-size:12.5px; text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#04120F; background:var(--signal);
+    padding:9px 16px; border-radius:var(--radius);
+    text-decoration:none; font-weight:600;
+    border:1px solid var(--signal);
+    transition:opacity .15s ease;
+  }
+  .nav-cta:hover{ opacity:0.85; }
+  .nav-toggle{ display:none; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:88px 0 64px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap:56px;
+    align-items:center;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--signal);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:''; width:8px; height:8px; background:var(--signal);
+    border-radius:50%;
+    box-shadow:0 0 0 3px rgba(94,234,212,0.15);
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ box-shadow:0 0 0 3px rgba(94,234,212,0.15); }
+    50%{ box-shadow:0 0 0 6px rgba(94,234,212,0.05); }
+  }
+  h1{
+    font-family:var(--mono);
+    font-size:clamp(32px, 4.4vw, 54px);
+    line-height:1.08;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin-bottom:22px;
+  }
+  h1 em{ font-style:normal; color:var(--signal); }
+  .hero p.lede{
+    font-size:17px; color:var(--muted); max-width:52ch;
+    margin-bottom:34px;
+  }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:13.5px; text-transform:uppercase;
+    letter-spacing:0.05em; font-weight:600;
+    padding:14px 22px; border-radius:var(--radius);
+    text-decoration:none; cursor:pointer;
+    transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+    border:1px solid transparent;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-primary{
+    background:var(--signal); color:#04120F; border-color:var(--signal);
+    box-shadow:0 0 0 0 rgba(94,234,212,0.4);
+  }
+  .btn-primary:hover{ box-shadow:0 6px 24px -6px rgba(94,234,212,0.5); }
+  .btn-ghost{
+    background:transparent; color:var(--text); border-color:var(--line);
+  }
+  .btn-ghost:hover{ border-color:var(--muted); }
+  .btn svg{ width:16px; height:16px; }
+
+  /* radar / scope panel */
+  .scope{
+    position:relative;
+    aspect-ratio:1/1;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:radial-gradient(circle at center, rgba(94,234,212,0.06), transparent 70%), var(--panel);
+    overflow:hidden;
+  }
+  .scope svg{ width:100%; height:100%; display:block; }
+  .scope-label{
+    position:absolute; top:14px; left:14px;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:0.08em; text-transform:uppercase;
+  }
+  .scope-label.br{ top:auto; left:auto; bottom:14px; right:14px; text-align:right; }
+  .scope-label b{ color:var(--signal); display:block; font-size:18px; margin-top:2px;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{ padding:84px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:48px; }
+  .tag{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--alert); margin-bottom:14px; display:block;
+  }
+  h2{
+    font-family:var(--mono); font-size:clamp(24px,3vw,34px);
+    font-weight:700; letter-spacing:-0.01em; margin-bottom:14px;
+  }
+  .section-head p{ color:var(--muted); font-size:15.5px; max-width:56ch; }
+
+  /* ---------- ABOUT / PRINCIPLES ---------- */
+  .principles{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+  }
+  .principle{ background:var(--panel); padding:28px 26px; }
+  .principle .idx{
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    letter-spacing:0.1em; margin-bottom:16px; display:block;
+  }
+  .principle h3{
+    font-family:var(--mono); font-size:16.5px; margin-bottom:10px; font-weight:600;
+  }
+  .principle p{ font-size:14.5px; color:var(--muted); }
+
+  /* ---------- RANGE / TOOLS ---------- */
+  .range-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;
+  }
+  .station{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:24px;
+    display:flex; flex-direction:column; gap:14px;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .station:hover{ border-color:var(--signal); transform:translateY(-2px); }
+  .station-head{ display:flex; align-items:center; justify-content:space-between; }
+  .station-lane{
+    font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.1em;
+  }
+  .station-status{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em;
+    color:var(--signal); border:1px solid rgba(94,234,212,0.35);
+    padding:3px 8px; border-radius:20px; text-transform:uppercase;
+  }
+  .station h3{ font-family:var(--mono); font-size:17px; font-weight:600; }
+  .station p{ font-size:14px; color:var(--muted); }
+  .station-tools{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:6px;
+  }
+  .station-tools a{
+    font-family:var(--mono); font-size:11.5px; text-decoration:none;
+    color:var(--text); background:var(--panel-2); border:1px solid var(--line);
+    padding:6px 10px; border-radius:20px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .station-tools a:hover{ border-color:var(--alert); color:var(--alert); }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .step{
+    display:grid; grid-template-columns:120px 1fr; gap:24px;
+    padding:26px 28px; background:var(--panel);
+  }
+  .step:not(:last-child){ border-bottom:1px solid var(--line); }
+  .step-tag{ font-family:var(--mono); font-size:12px; color:var(--alert); letter-spacing:0.1em; padding-top:2px;}
+  .step h3{ font-family:var(--mono); font-size:16px; margin-bottom:6px; font-weight:600; }
+  .step p{ font-size:14.5px; color:var(--muted); max-width:60ch; }
+
+  /* ---------- STATS ---------- */
+  .stats{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+  }
+  .stat{ background:var(--panel); padding:26px; }
+  .stat .n{ font-family:var(--mono); font-size:30px; font-weight:700; color:var(--signal); }
+  .stat .l{ font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:6px;}
+
+  /* ---------- JOIN CTA ---------- */
+  .join{
+    padding:96px 0;
+    text-align:center;
+    border-top:1px solid var(--line);
+    position:relative;
+  }
+  .join::before{
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse at center, rgba(94,234,212,0.08), transparent 65%);
+    pointer-events:none;
+  }
+  .join .tag{ justify-content:center; display:flex; }
+  .join h2{ font-size:clamp(26px,4vw,42px); margin-bottom:16px; }
+  .join p{ color:var(--muted); max-width:52ch; margin:0 auto 36px; font-size:16px; }
+  .btn-join{
+    font-size:16px; padding:18px 34px;
+    background:var(--signal); color:#04120F; border-color:var(--signal);
+    box-shadow:0 0 40px -8px rgba(94,234,212,0.45);
+  }
+  .btn-join:hover{ box-shadow:0 0 56px -6px rgba(94,234,212,0.65); }
+  .join-meta{
+    margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--muted);
+    letter-spacing:0.05em;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:36px 0;
+  }
+  .footer-inner{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  }
+  .footer-brand{ display:flex; align-items:center; gap:10px; }
+  .footer-brand img{ width:22px; height:22px; border-radius:5px; }
+  .footer-brand span{ font-family:var(--mono); font-size:12.5px; color:var(--muted); letter-spacing:0.06em; }
+  .footer-links{ display:flex; gap:22px; }
+  .footer-links a{
+    font-family:var(--mono); font-size:12px; color:var(--muted); text-decoration:none;
+    letter-spacing:0.04em;
+  }
+  .footer-links a:hover{ color:var(--signal); }
+
+  @media (max-width: 860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .scope{ max-width:420px; margin:0 auto; }
+    .principles{ grid-template-columns:1fr; }
+    .range-grid{ grid-template-columns:1fr; }
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .step{ grid-template-columns:1fr; gap:8px; }
+    nav.links{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <img src="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512" alt="Atez logo">
+      <span class="brand-name">ATE<span>Z</span></span>
+    </a>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#range">The Range</a>
+      <a href="#process">How It Works</a>
+    </nav>
+    <a class="nav-cta" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Range status — online</span>
+        <h1>Practice offense.<br>Build defense.<br><em>Stay inside the wire.</em></h1>
+        <p class="lede">Atez is a community of hackers who train in controlled, disposable environments — never on systems that aren't ours. Learn the craft, break real (isolated) things, and walk away with skills that hold up.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">
+            Join Atez on Discord
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#range">See the range</a>
+        </div>
+      </div>
+
+      <div class="scope" aria-hidden="true">
+        <span class="scope-label">SECTOR<b>ATZ-01</b></span>
+        <span class="scope-label br">ACTIVE LANES<b id="laneCount">06</b></span>
+        <svg viewBox="0 0 400 400">
+          <defs>
+            <radialGradient id="sweepFade" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#5EEAD4" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#5EEAD4" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="200" r="170" stroke="#223038" fill="none" stroke-width="1"/>
+          <circle cx="200" cy="200" r="120" stroke="#223038" fill="none" stroke-width="1"/>
+          <circle cx="200" cy="200" r="70" stroke="#223038" fill="none" stroke-width="1"/>
+          <line x1="200" y1="30" x2="200" y2="370" stroke="#223038" stroke-width="1"/>
+          <line x1="30" y1="200" x2="370" y2="200" stroke="#223038" stroke-width="1"/>
+
+          <g transform="translate(200,200)">
+            <g>
+              <path d="M0 0 L0 -170 A170 170 0 0 1 40 -166 Z" fill="url(#sweepFade)">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>
+              </path>
+            </g>
+          </g>
+
+          <circle cx="240" cy="120" r="4" fill="#FFB454"/>
+          <circle cx="150" cy="260" r="4" fill="#5EEAD4"/>
+          <circle cx="280" cy="240" r="4" fill="#5EEAD4"/>
+          <circle cx="140" cy="150" r="4" fill="#FFB454"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section wrap" id="about">
+    <div class="section-head">
+      <span class="tag">Why Atez exists</span>
+      <h2>Security skills only mean something if they're earned honestly.</h2>
+      <p>We run labs, CTFs, and study groups so members can learn how systems break — legally, safely, and with people who'll explain the "why," not just the "how."</p>
+    </div>
+    <div class="principles">
+      <div class="principle">
+        <span class="idx">SCOPE</span>
+        <h3>Consent, always</h3>
+        <p>Every exercise runs on infrastructure we own or that's explicitly built for training. No live targets, no exceptions.</p>
+      </div>
+      <div class="principle">
+        <span class="idx">METHOD</span>
+        <h3>Understand before you exploit</h3>
+        <p>We teach the underlying mechanics — protocols, memory, logic flaws — so members can reason about new problems, not just replay steps.</p>
+      </div>
+      <div class="principle">
+        <span class="idx">PURPOSE</span>
+        <h3>Defense is the point</h3>
+        <p>Every offensive technique we cover pairs with the detection and hardening side. Breaking things responsibly is how you learn to protect them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RANGE / TOOL CATEGORIES -->
+  <section class="section wrap" id="range">
+    <div class="section-head">
+      <span class="tag">The Range</span>
+      <h2>Six lanes. All sandboxed.</h2>
+      <p>Each lane is a self-contained environment members spin up on demand — vulnerable-by-design boxes, isolated networks, and snapshots that reset after every session. Below are the categories members work in and the established, industry-standard tools each lane is built around.</p>
+    </div>
+
+    <div class="range-grid">
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 01 — RECON</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Reconnaissance &amp; Mapping</h3>
+        <p>Enumerate hosts, services, and attack surface inside a closed lab network before touching anything else.</p>
+        <div class="station-tools">
+          <a href="https://nmap.org/" target="_blank" rel="noopener">Nmap</a>
+          <a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a>
+          <a href="https://github.com/OWASP/Amass" target="_blank" rel="noopener">Amass</a>
+        </div>
+      </div>
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 02 — WEB</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Web Application Security</h3>
+        <p>Work through injection, auth, and logic flaws on deliberately vulnerable apps built for practice.</p>
+        <div class="station-tools">
+          <a href="https://portswigger.net/burp/communitydownload" target="_blank" rel="noopener">Burp Suite CE</a>
+          <a href="https://owasp.org/www-project-zap/" target="_blank" rel="noopener">OWASP ZAP</a>
+          <a href="https://github.com/digininja/DVWA" target="_blank" rel="noopener">DVWA</a>
+        </div>
+      </div>
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 03 — CRYPTO</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Cryptography &amp; Encoding</h3>
+        <p>Break intentionally weak ciphers and encodings to understand how and why real implementations fail.</p>
+        <div class="station-tools">
+          <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">CyberChef</a>
+          <a href="https://www.openssl.org/" target="_blank" rel="noopener">OpenSSL</a>
+          <a href="https://www.dcode.fr/" target="_blank" rel="noopener">dCode</a>
+        </div>
+      </div>
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 04 — FORENSICS</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Digital Forensics</h3>
+        <p>Trace incidents through disk images, memory captures, and packet dumps from staged scenarios.</p>
+        <div class="station-tools">
+          <a href="https://www.sans.org/tools/sift-workstation/" target="_blank" rel="noopener">SIFT Workstation</a>
+          <a href="https://www.volatilityfoundation.org/" target="_blank" rel="noopener">Volatility</a>
+          <a href="https://www.autopsy.com/" target="_blank" rel="noopener">Autopsy</a>
+        </div>
+      </div>
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 05 — REVERSING</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Reverse Engineering</h3>
+        <p>Pull apart binaries built for practice to understand compiled logic, obfuscation, and protection schemes.</p>
+        <div class="station-tools">
+          <a href="https://ghidra-sre.org/" target="_blank" rel="noopener">Ghidra</a>
+          <a href="https://github.com/radareorg/radare2" target="_blank" rel="noopener">radare2</a>
+          <a href="https://x64dbg.com/" target="_blank" rel="noopener">x64dbg</a>
+        </div>
+      </div>
+
+      <div class="station">
+        <div class="station-head">
+          <span class="station-lane">LANE 06 — DEFENSE</span>
+          <span class="station-status">Sandboxed</span>
+        </div>
+        <h3>Blue Team &amp; Detection</h3>
+        <p>Build detections for the attacks run in the other lanes — logging, alerting, and incident response drills.</p>
+        <div class="station-tools">
+          <a href="https://www.elastic.co/security" target="_blank" rel="noopener">Elastic Security</a>
+          <a href="https://www.zeek.org/" target="_blank" rel="noopener">Zeek</a>
+          <a href="https://www.security-onion.net/" target="_blank" rel="noopener">Security Onion</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section wrap" id="process">
+    <div class="section-head">
+      <span class="tag">How it works</span>
+      <h2>From "curious" to "capable," on a real path.</h2>
+      <p>No prior experience required — every lane has an entry point for beginners and a harder track once you're ready.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-tag">STEP 01</span>
+        <div>
+          <h3>Join the Discord</h3>
+          <p>That's the front door. Introduce yourself, pick a lane, and get access to our lab guides and scheduled sessions.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 02</span>
+        <div>
+          <h3>Spin up a sandbox</h3>
+          <p>Each exercise runs in an isolated VM or container built specifically for it. Nothing you touch is a production system, ever.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 03</span>
+        <div>
+          <h3>Work the lane with others</h3>
+          <p>Pair up in voice, compare approaches, and get unstuck faster than you would solo. Mentors sit in on most sessions.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 04</span>
+        <div>
+          <h3>Take it to a CTF</h3>
+          <p>Once you're comfortable, we run and compete in capture-the-flag events as a team — the legal, structured version of the real thing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="section wrap">
+    <div class="stats">
+      <div class="stat"><div class="n">6</div><div class="l">Active lanes</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">Production systems touched</div></div>
+      <div class="stat"><div class="n">24/7</div><div class="l">Lab availability</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">Isolated by default</div></div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section class="join wrap" id="join">
+    <span class="tag">Ready when you are</span>
+    <h2>The range is open.</h2>
+    <p>Come learn with people who'd rather explain a concept twice than let you memorize a checklist.</p>
+    <a class="btn btn-primary btn-join" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">
+      Join Atez
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <div class="join-meta">discord.gg/F2MMNBTkeQ</div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <img src="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512" alt="Atez logo">
+      <span>ATEZ — Ethical hacking, done in the open</span>
+    </div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#range">The Range</a>
+      <a href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
