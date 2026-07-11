@@ -298,13 +298,17 @@
     <div class="hero-grid">
       <div>
         <span class="eyebrow"><span class="eyebrow-dot"></span>Recruiting now</span>
-        <h1>We build tools<br>for <span class="accent">ethical hackers.</span></h1>
+        <h1>We build tools<br>for <span class="accent">Hackers.</span></h1>
         <p class="hero-sub">Atez is a working hacking collective — not a metaphor, not a "learning platform." We ship real utilities and train people to break systems the not so legal way with permission.</p>
+		        <div class="compat-note">⚠ Not all Tools are made by Atez!</div>
         <div class="hero-actions">
           <a class="btn btn-fill" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
-          <a class="btn btn-ghost" href="#wordlist">Use the tools →</a>
+          <a class="btn btn-ghost" href="#wordlist">Tools →</a>
         </div>
         <p class="hero-note"><b>Platform note:</b> The HackPack currently targets Windows 10/11 only.</p>
+<p class="hero-note">
+  <b>Last Updated</b> <span id="update-time"></span> v2.3.
+</p>
       </div>
 
       <div class="term">
@@ -316,7 +320,7 @@
         </div>
         <div class="term-body">
           <div class="line"><span class="prompt">$</span> whoami</div>
-          <div class="line out">Atez — hacking collective</div>
+          <div class="line out">Atez — Hacking collective</div>
           <div class="line"><span class="prompt">$</span> ver</div>
           <div class="line out">Windows 10/11 required</div>
           <div class="line"><span class="prompt">$</span> ls tools/</div>
@@ -352,10 +356,6 @@
         <div class="wordlist-item"><span class="idx">10</span>empty</div>
         <div class="wordlist-item"><span class="idx">11</span>empty</div>
         <div class="wordlist-item"><span class="idx">12</span>empty</div>
-        <div class="wordlist-item"><span class="idx">13</span>empty</div>
-        <div class="wordlist-item"><span class="idx">14</span>empty</div>
-        <div class="wordlist-item"><span class="idx">15</span>empty</div>
-        <div class="wordlist-item"><span class="idx">16</span>empty</div>
       </div>
     </div>
   </section>
@@ -551,7 +551,7 @@
     <div class="principles">
       <div class="principle">
         <span class="idx">SCOPE</span>
-        <h3>Consent, always</h3>
+        <h3>No Exceptions</h3>
         <p>Every Tool is made to target live targets. no exceptions.</p>
       </div>
       <div class="principle">
@@ -722,6 +722,24 @@
       val.length ? `~${bits} bits of entropy — ${label}. (Computed locally, never sent anywhere.)` : '—';
   });
 </script>
+<script>
+const updateDate = new Date("2026-07-10"); // Change this date when you update
 
+const today = new Date();
+const diffTime = today - updateDate;
+const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+let text;
+
+if (diffDays === 0) {
+  text = "today";
+} else if (diffDays === 1) {
+  text = "1 day ago";
+} else {
+  text = `${diffDays} days ago`;
+}
+
+document.getElementById("update-time").textContent = text;
+</script>
 </body>
 </html>
