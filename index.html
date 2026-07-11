@@ -3,341 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atez — Practice on the range</title>
-<meta name="description" content="Atez is an ethical hacking community. Learn offensive and defensive security in isolated, legal, purpose-built ranges.">
+<title>Atez // Ethical Hacking Toolkit</title>
+<meta name="description" content="Atez builds real tools for ethical hackers — encoders, hashers, token decoders, and a community that trains legally. Windows 10/11.">
 <link rel="icon" href="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
   :root{
-    --ink:#0A0E12;
-    --panel:#111820;
-    --panel-2:#141C25;
-    --line:#223038;
-    --text:#DCE6EC;
-    --muted:#7E8FA0;
-    --signal:#5EEAD4;   /* safe / practice trace */
-    --alert:#FFB454;    /* live / attack trace */
-    --danger:#FF6B6B;
-    --radius:2px;
-    --mono: 'IBM Plex Mono', ui-monospace, monospace;
-    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --bg:#0a0505;
+    --bg2:#120808;
+    --panel:#170a0a;
+    --panel2:#1d0c0c;
+    --border:rgba(226,19,19,0.18);
+    --border-strong:rgba(226,19,19,0.42);
+    --red:#e21313;
+    --red-dim:#8a0f0f;
+    --amber:#ff7a45;
+    --text:#f5e9e9;
+    --muted:#8a6a6a;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
   }
-
-  *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--ink);
-    color:var(--text);
-    font-family:var(--sans);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size:48px 48px;
-    background-position:-1px -1px;
-    background-attachment:fixed;
+    background:var(--bg); color:var(--text);
+    font-family:var(--mono);
+    line-height:1.6;
+    position:relative;
+    overflow-x:hidden;
   }
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--red); color:#0a0505; }
+
+  body::before{
+    content:''; position:fixed; inset:0; z-index:2; pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom, rgba(226,19,19,0.02) 0px, rgba(226,19,19,0.02) 1px,
+      transparent 1px, transparent 3px
+    );
+    mix-blend-mode:overlay;
   }
-
-  a{color:inherit;}
-  img{max-width:100%; display:block;}
-
-  .wrap{
-    max-width:1140px;
-    margin:0 auto;
-    padding:0 28px;
+  body::after{
+    content:''; position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(ellipse at 20% 0%, rgba(226,19,19,0.10), transparent 55%),
+               radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.65), transparent 60%);
   }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; position:relative; z-index:3; }
 
-  ::selection{ background:var(--signal); color:#04120F; }
+  /* chevron divider (echoes the logo A) */
+  .chev{ display:inline-block; width:11px; height:11px; margin-right:9px; }
+  .chev svg{ width:100%; height:100%; display:block; }
 
   /* ---------- NAV ---------- */
-  header.nav{
+  nav{
     position:sticky; top:0; z-index:50;
-    background:rgba(10,14,18,0.86);
-    backdrop-filter: blur(8px);
-    border-bottom:1px solid var(--line);
+    background:rgba(10,5,5,0.9); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
   }
   .nav-inner{
     display:flex; align-items:center; justify-content:space-between;
-    padding:14px 28px;
-    max-width:1140px; margin:0 auto;
+    padding:14px 28px; max-width:1180px; margin:0 auto;
   }
-  .brand{
-    display:flex; align-items:center; gap:12px;
-    text-decoration:none;
+  .brand{ display:flex; align-items:center; gap:2px; }
+  .brand b{ font-size:24px; letter-spacing:0.06em; font-weight:800; text-transform:uppercase; display:inline-flex; align-items:center; gap:1px; }
+  .brand b .z{ color:var(--red); }
+  .logo-a{ display:inline-flex; align-items:center; }
+  .logo-a svg{ width:24px; height:24px; display:block; }
+  .nav-links{ display:flex; align-items:center; gap:26px; }
+  .nav-links a{ font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); border-bottom:1px solid transparent; padding:4px 0; transition:color .15s,border-color .15s; }
+  .nav-links a:hover{ color:var(--red); border-color:var(--red); }
+  .win-chip{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);
+    border:1px solid var(--border-strong); padding:5px 9px; border-radius:3px;
   }
-  .brand img{
-    width:34px; height:34px; border-radius:6px;
-    border:1px solid var(--line);
-  }
-  .brand-name{
-    font-family:var(--mono); font-weight:600; letter-spacing:0.06em;
-    font-size:16px; text-transform:uppercase;
-    color:var(--text);
-  }
-  .brand-name span{color:var(--signal);}
-  nav.links{ display:flex; gap:28px; }
-  nav.links a{
-    font-family:var(--mono); font-size:12.5px; text-transform:uppercase;
-    letter-spacing:0.08em; color:var(--muted); text-decoration:none;
-    padding:6px 0; border-bottom:1px solid transparent;
-    transition:color .15s ease, border-color .15s ease;
-  }
-  nav.links a:hover{ color:var(--text); border-color:var(--signal); }
   .nav-cta{
-    font-family:var(--mono); font-size:12.5px; text-transform:uppercase;
-    letter-spacing:0.06em;
-    color:#04120F; background:var(--signal);
-    padding:9px 16px; border-radius:var(--radius);
-    text-decoration:none; font-weight:600;
-    border:1px solid var(--signal);
-    transition:opacity .15s ease;
+    font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-weight:700;
+    color:#0a0505; background:var(--red); padding:9px 16px; border:1px solid var(--red);
   }
-  .nav-cta:hover{ opacity:0.85; }
-  .nav-toggle{ display:none; }
+  .nav-cta:hover{ background:var(--text); border-color:var(--text); }
 
   /* ---------- HERO ---------- */
-  .hero{
-    padding:88px 0 64px;
-    position:relative;
-    overflow:hidden;
-  }
-  .hero-grid{
-    display:grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap:56px;
-    align-items:center;
-  }
+  .hero{ padding:80px 0 70px; border-bottom:1px solid var(--border); }
+  .hero-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center; }
+
   .eyebrow{
-    font-family:var(--mono); font-size:12px; letter-spacing:0.16em;
-    text-transform:uppercase; color:var(--signal);
-    display:flex; align-items:center; gap:10px;
-    margin-bottom:22px;
+    font-size:11.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--red);
+    display:flex; align-items:center; gap:8px; margin-bottom:22px;
   }
-  .eyebrow::before{
-    content:''; width:8px; height:8px; background:var(--signal);
-    border-radius:50%;
-    box-shadow:0 0 0 3px rgba(94,234,212,0.15);
-    animation:pulse 2.2s ease-in-out infinite;
-  }
-  @keyframes pulse{
-    0%,100%{ box-shadow:0 0 0 3px rgba(94,234,212,0.15); }
-    50%{ box-shadow:0 0 0 6px rgba(94,234,212,0.05); }
-  }
+  .eyebrow-dot{ width:7px; height:7px; background:var(--red); border-radius:50%; box-shadow:0 0 0 3px rgba(226,19,19,0.18); animation:pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ box-shadow:0 0 0 3px rgba(226,19,19,0.18); } 50%{ box-shadow:0 0 0 6px rgba(226,19,19,0.05); } }
+
   h1{
-    font-family:var(--mono);
-    font-size:clamp(32px, 4.4vw, 54px);
-    line-height:1.08;
-    font-weight:700;
-    letter-spacing:-0.01em;
-    margin-bottom:22px;
+    font-size:clamp(32px,5.2vw,58px); font-weight:800; letter-spacing:-0.01em;
+    line-height:1.04; margin-bottom:20px; text-transform:uppercase;
   }
-  h1 em{ font-style:normal; color:var(--signal); }
-  .hero p.lede{
-    font-size:17px; color:var(--muted); max-width:52ch;
-    margin-bottom:34px;
-  }
-  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+  h1 .accent{ color:var(--red); }
 
+  .hero-sub{ max-width:52ch; color:var(--muted); font-size:15px; line-height:1.75; margin-bottom:30px; }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
   .btn{
-    display:inline-flex; align-items:center; gap:10px;
-    font-family:var(--mono); font-size:13.5px; text-transform:uppercase;
-    letter-spacing:0.05em; font-weight:600;
-    padding:14px 22px; border-radius:var(--radius);
-    text-decoration:none; cursor:pointer;
-    transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease;
-    border:1px solid transparent;
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:13px; text-transform:uppercase; letter-spacing:0.05em; font-weight:700;
+    padding:14px 24px; border:1px solid var(--red);
+    transition:transform .15s, box-shadow .15s, background .15s, color .15s;
   }
-  .btn:hover{ transform:translateY(-1px); }
-  .btn-primary{
-    background:var(--signal); color:#04120F; border-color:var(--signal);
-    box-shadow:0 0 0 0 rgba(94,234,212,0.4);
-  }
-  .btn-primary:hover{ box-shadow:0 6px 24px -6px rgba(94,234,212,0.5); }
-  .btn-ghost{
-    background:transparent; color:var(--text); border-color:var(--line);
-  }
-  .btn-ghost:hover{ border-color:var(--muted); }
-  .btn svg{ width:16px; height:16px; }
+  .btn-fill{ background:var(--red); color:#0a0505; }
+  .btn-fill:hover{ box-shadow:0 0 34px -6px rgba(226,19,19,0.7); transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--text); border-color:var(--border-strong); }
+  .btn-ghost:hover{ border-color:var(--red); color:var(--red); }
+  .hero-note{ font-size:11.5px; color:var(--muted); }
+  .hero-note b{ color:var(--text); }
 
-  /* radar / scope panel */
-  .scope{
-    position:relative;
-    aspect-ratio:1/1;
-    border:1px solid var(--line);
-    border-radius:6px;
-    background:radial-gradient(circle at center, rgba(94,234,212,0.06), transparent 70%), var(--panel);
+  /* terminal */
+  .term{
+    background:var(--panel); border:1px solid var(--border-strong); border-radius:6px;
+    box-shadow:0 0 60px -20px rgba(226,19,19,0.3);
     overflow:hidden;
   }
-  .scope svg{ width:100%; height:100%; display:block; }
-  .scope-label{
-    position:absolute; top:14px; left:14px;
-    font-family:var(--mono); font-size:11px; color:var(--muted);
-    letter-spacing:0.08em; text-transform:uppercase;
-  }
-  .scope-label.br{ top:auto; left:auto; bottom:14px; right:14px; text-align:right; }
-  .scope-label b{ color:var(--signal); display:block; font-size:18px; margin-top:2px;}
+  .term-bar{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--panel2); border-bottom:1px solid var(--border); }
+  .term-dot{ width:10px; height:10px; border-radius:50%; }
+  .term-title{ margin-left:8px; font-size:11px; color:var(--muted); letter-spacing:0.05em; }
+  .term-body{ padding:22px 24px; font-size:13.5px; min-height:180px; }
+  .term-body .line{ margin-bottom:7px; }
+  .prompt{ color:var(--red); }
+  .out{ color:var(--muted); }
+  .out.warn{ color:var(--amber); }
+  .cursor{ display:inline-block; width:8px; height:15px; background:var(--red); vertical-align:middle; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
 
-  /* ---------- SECTION HEADERS ---------- */
-  .section{ padding:84px 0; border-top:1px solid var(--line); }
-  .section-head{ max-width:640px; margin-bottom:48px; }
-  .tag{
-    font-family:var(--mono); font-size:12px; letter-spacing:0.14em;
-    text-transform:uppercase; color:var(--alert); margin-bottom:14px; display:block;
-  }
-  h2{
-    font-family:var(--mono); font-size:clamp(24px,3vw,34px);
-    font-weight:700; letter-spacing:-0.01em; margin-bottom:14px;
-  }
-  .section-head p{ color:var(--muted); font-size:15.5px; max-width:56ch; }
+  /* ---------- TICKER ---------- */
+  .ticker{ border-bottom:1px solid var(--border); background:var(--panel); overflow:hidden; white-space:nowrap; }
+  .ticker-track{ display:inline-block; padding:11px 0; animation:scroll 26s linear infinite; }
+  .ticker span{ font-size:11.5px; color:var(--muted); letter-spacing:0.05em; margin-right:40px; }
+  .ticker span b{ color:var(--red); }
+  @keyframes scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
-  /* ---------- ABOUT / PRINCIPLES ---------- */
-  .principles{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
-    background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;
-  }
-  .principle{ background:var(--panel); padding:28px 26px; }
-  .principle .idx{
-    font-family:var(--mono); font-size:12px; color:var(--muted);
-    letter-spacing:0.1em; margin-bottom:16px; display:block;
-  }
-  .principle h3{
-    font-family:var(--mono); font-size:16.5px; margin-bottom:10px; font-weight:600;
-  }
-  .principle p{ font-size:14.5px; color:var(--muted); }
-
-  /* ---------- RANGE / TOOLS ---------- */
-  .range-grid{
-    display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;
-  }
-  .station{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:24px;
-    display:flex; flex-direction:column; gap:14px;
-    transition:border-color .15s ease, transform .15s ease;
-  }
-  .station:hover{ border-color:var(--signal); transform:translateY(-2px); }
-  .station-head{ display:flex; align-items:center; justify-content:space-between; }
-  .station-lane{
-    font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:0.1em;
-  }
-  .station-status{
-    font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em;
-    color:var(--signal); border:1px solid rgba(94,234,212,0.35);
-    padding:3px 8px; border-radius:20px; text-transform:uppercase;
-  }
-  .station h3{ font-family:var(--mono); font-size:17px; font-weight:600; }
-  .station p{ font-size:14px; color:var(--muted); }
-  .station-tools{
-    display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:6px;
-  }
-  .station-tools a{
-    font-family:var(--mono); font-size:11.5px; text-decoration:none;
-    color:var(--text); background:var(--panel-2); border:1px solid var(--line);
-    padding:6px 10px; border-radius:20px;
-    transition:border-color .15s ease, color .15s ease;
-  }
-  .station-tools a:hover{ border-color:var(--alert); color:var(--alert); }
-
-  /* ---------- HOW IT WORKS ---------- */
-  .steps{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
-  .step{
-    display:grid; grid-template-columns:120px 1fr; gap:24px;
-    padding:26px 28px; background:var(--panel);
-  }
-  .step:not(:last-child){ border-bottom:1px solid var(--line); }
-  .step-tag{ font-family:var(--mono); font-size:12px; color:var(--alert); letter-spacing:0.1em; padding-top:2px;}
-  .step h3{ font-family:var(--mono); font-size:16px; margin-bottom:6px; font-weight:600; }
-  .step p{ font-size:14.5px; color:var(--muted); max-width:60ch; }
-
-  /* ---------- STATS ---------- */
-  .stats{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
-    background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden;
-  }
-  .stat{ background:var(--panel); padding:26px; }
-  .stat .n{ font-family:var(--mono); font-size:30px; font-weight:700; color:var(--signal); }
-  .stat .l{ font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-top:6px;}
-
-  /* ---------- JOIN CTA ---------- */
-  .join{
-    padding:96px 0;
-    text-align:center;
-    border-top:1px solid var(--line);
-    position:relative;
-  }
-  .join::before{
-    content:'';
-    position:absolute; inset:0;
-    background:radial-gradient(ellipse at center, rgba(94,234,212,0.08), transparent 65%);
-    pointer-events:none;
-  }
-  .join .tag{ justify-content:center; display:flex; }
-  .join h2{ font-size:clamp(26px,4vw,42px); margin-bottom:16px; }
-  .join p{ color:var(--muted); max-width:52ch; margin:0 auto 36px; font-size:16px; }
-  .btn-join{
-    font-size:16px; padding:18px 34px;
-    background:var(--signal); color:#04120F; border-color:var(--signal);
-    box-shadow:0 0 40px -8px rgba(94,234,212,0.45);
-  }
-  .btn-join:hover{ box-shadow:0 0 56px -6px rgba(94,234,212,0.65); }
-  .join-meta{
-    margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--muted);
-    letter-spacing:0.05em;
+  /* ---------- SECTION ---------- */
+  .section{ padding:84px 0; border-top:1px solid var(--border); }
+  .sec-head{ max-width:680px; margin-bottom:44px; }
+  .tag{ font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--red); margin-bottom:14px; display:flex; align-items:center; }
+  h2{ font-size:clamp(24px,3.2vw,36px); font-weight:800; letter-spacing:-0.01em; text-transform:uppercase; margin-bottom:14px; }
+  .sec-head p{ color:var(--muted); font-size:14.5px; max-width:60ch; }
+  .compat-note{
+    display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+    font-size:11.5px; color:var(--amber); border:1px solid rgba(255,122,69,0.35);
+    padding:8px 12px; border-radius:3px;
   }
 
-  /* ---------- FOOTER ---------- */
-  footer{
-    border-top:1px solid var(--line);
-    padding:36px 0;
+  /* ---------- WORDLIST ---------- */
+  .wordlist-box{
+    border:1px solid var(--border-strong); border-radius:6px; background:var(--panel);
+    padding:8px;
   }
-  .footer-inner{
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  .wordlist-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border);
   }
+  .wordlist-item{
+    background:var(--panel2); padding:14px 16px; font-size:13px; color:var(--text);
+    display:flex; align-items:center; gap:10px; transition:background .15s, color .15s;
+  }
+  .wordlist-item:hover{ background:var(--bg2); color:var(--red); }
+  .wordlist-item .idx{ font-size:10.5px; color:var(--muted); min-width:26px; }
+  @media (max-width:860px){
+    .wordlist-grid{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ---------- ARSENAL ---------- */
+  .arsenal{ border:1px solid var(--border-strong); border-radius:6px; background:var(--panel); overflow:hidden; }
+  .tabs{ display:flex; flex-wrap:wrap; border-bottom:1px solid var(--border); }
+  .tab-btn{
+    font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:0.05em;
+    color:var(--muted); background:transparent; border:none; border-right:1px solid var(--border);
+    padding:14px 18px; cursor:pointer; transition:color .15s, background .15s;
+  }
+  .tab-btn:hover{ color:var(--text); }
+  .tab-btn.active{ color:var(--red); background:var(--panel2); }
+  .tab-panel{ display:none; padding:26px; }
+  .tab-panel.active{ display:block; }
+  .field-label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; display:block; }
+  textarea, input[type=text]{
+    width:100%; background:var(--bg2); border:1px solid var(--border); color:var(--text);
+    font-family:var(--mono); font-size:13px; padding:12px; border-radius:4px; resize:vertical;
+  }
+  textarea:focus, input[type=text]:focus{ outline:none; border-color:var(--red); }
+  select{ background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:12.5px; padding:9px 10px; border-radius:4px; }
+  .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .mini-btn{
+    font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;
+    color:var(--red); background:transparent; border:1px solid var(--red-dim);
+    padding:9px 14px; cursor:pointer; transition:background .15s, color .15s;
+  }
+  .mini-btn:hover{ background:var(--red); color:#0a0505; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .result-box{
+    margin-top:8px; font-size:12.5px; color:var(--text);
+    background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:12px;
+    white-space:pre-wrap; word-break:break-all; min-height:20px;
+  }
+  .subnet-out{ display:grid; grid-template-columns:1fr 1fr; gap:8px 20px; margin-top:14px; font-size:12.5px; }
+  .subnet-out div span{ color:var(--muted); display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; }
+  .subnet-out div b{ color:var(--red); }
+  .strength-bar{ height:6px; background:var(--bg2); border:1px solid var(--border); margin-top:10px; overflow:hidden; }
+  .strength-fill{ height:100%; transition:width .2s ease, background .2s ease; }
+  .note{ font-size:11.5px; color:var(--muted); margin-top:10px; }
+
+  /* ---------- MODULES ---------- */
+  .modules{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .module{ background:var(--panel); padding:24px; display:flex; flex-direction:column; gap:12px; transition:background .15s; }
+  .module:hover{ background:var(--panel2); }
+  .module-id{ font-size:10.5px; color:var(--muted); letter-spacing:0.1em; }
+  .module h3{ font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.01em; }
+  .module p{ font-size:13px; color:var(--muted); }
+  .module-tools{ display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:4px; }
+  .module-tools a{
+    font-size:11px; color:var(--text); background:var(--bg2); border:1px solid var(--border);
+    padding:5px 10px; border-radius:20px; transition:border-color .15s,color .15s;
+  }
+  .module-tools a:hover{ border-color:var(--amber); color:var(--amber); }
+
+  /* ---------- STEPS ---------- */
+  .steps{ border:1px solid var(--border); }
+  .step{ display:grid; grid-template-columns:110px 1fr; gap:20px; padding:22px 26px; background:var(--panel); }
+  .step:not(:last-child){ border-bottom:1px solid var(--border); }
+  .step-tag{ font-size:11px; color:var(--red); letter-spacing:0.08em; }
+  .step h3{ font-size:14.5px; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.02em; }
+  .step p{ font-size:13px; color:var(--muted); max-width:62ch; }
+
+  /* ---------- PRINCIPLES ---------- */
+  .principles{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .principle{ background:var(--panel); padding:26px; }
+  .principle .idx{ font-size:11px; color:var(--muted); letter-spacing:0.1em; margin-bottom:14px; display:block; }
+  .principle h3{ font-size:15px; margin-bottom:8px; text-transform:uppercase; }
+  .principle p{ font-size:13px; color:var(--muted); }
+
+  /* ---------- JOIN ---------- */
+  .join{ padding:90px 0; text-align:center; border-top:1px solid var(--border); position:relative; }
+  .join::before{ content:''; position:absolute; inset:0; background:radial-gradient(ellipse at center, rgba(226,19,19,0.10), transparent 60%); pointer-events:none; }
+  .join .tag{ justify-content:center; }
+  .join h2{ margin-bottom:16px; }
+  .join p{ color:var(--muted); max-width:52ch; margin:0 auto 32px; font-size:14.5px; }
+  .join-meta{ margin-top:20px; font-size:11.5px; color:var(--muted); }
+
+  footer{ border-top:1px solid var(--border); padding:32px 0; }
+  .footer-inner{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
   .footer-brand{ display:flex; align-items:center; gap:10px; }
-  .footer-brand img{ width:22px; height:22px; border-radius:5px; }
-  .footer-brand span{ font-family:var(--mono); font-size:12.5px; color:var(--muted); letter-spacing:0.06em; }
-  .footer-links{ display:flex; gap:22px; }
-  .footer-links a{
-    font-family:var(--mono); font-size:12px; color:var(--muted); text-decoration:none;
-    letter-spacing:0.04em;
-  }
-  .footer-links a:hover{ color:var(--signal); }
+  .footer-brand img{ width:20px; height:20px; border-radius:4px; }
+  .footer-brand span{ font-size:11.5px; color:var(--muted); }
+  .footer-links{ display:flex; gap:20px; }
+  .footer-links a{ font-size:11px; color:var(--muted); }
+  .footer-links a:hover{ color:var(--red); }
 
-  @media (max-width: 860px){
+  @media (max-width:860px){
+    .nav-links a:not(.nav-cta){ display:none; }
+    .win-chip{ display:none; }
     .hero-grid{ grid-template-columns:1fr; }
-    .scope{ max-width:420px; margin:0 auto; }
+    .modules{ grid-template-columns:1fr; }
     .principles{ grid-template-columns:1fr; }
-    .range-grid{ grid-template-columns:1fr; }
-    .stats{ grid-template-columns:repeat(2,1fr); }
-    .step{ grid-template-columns:1fr; gap:8px; }
-    nav.links{ display:none; }
+    .step{ grid-template-columns:1fr; gap:6px; }
+    .grid2{ grid-template-columns:1fr; }
+    .subnet-out{ grid-template-columns:1fr; }
+    .tabs{ overflow-x:auto; }
   }
 </style>
 </head>
 <body>
 
-<header class="nav">
+<nav>
   <div class="nav-inner">
     <a class="brand" href="#top">
-      <img src="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512" alt="Atez logo">
-      <span class="brand-name">ATE<span>Z</span></span>
+      <b aria-label="Atez">
+        <span class="logo-a" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <path d="M31 70 L49.5 28 L68 70" fill="none" stroke="#ffffff" stroke-width="9" stroke-linejoin="miter" stroke-linecap="butt"/>
+            <rect x="44.7" y="53" width="10.6" height="15" rx="5.3" fill="#e21313"/>
+          </svg>
+        </span>TE<span class="z">Z</span>
+      </b>
     </a>
-    <nav class="links">
-      <a href="#about">About</a>
-      <a href="#range">The Range</a>
-      <a href="#process">How It Works</a>
-    </nav>
-    <a class="nav-cta" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+    <div class="nav-links">
+      <a href="#wordlist">Arsenal</a>
+      <a href="#modules">Modules</a>
+      <a href="#how">How It Works</a>
+      <a href="#about">Principles</a>
+      <span class="win-chip">Windows 10/11</span>
+      <a class="nav-cta" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+    </div>
   </div>
-</header>
+</nav>
 
 <main id="top">
 
@@ -345,233 +297,283 @@
   <section class="hero wrap">
     <div class="hero-grid">
       <div>
-        <span class="eyebrow">Range status — online</span>
-        <h1>Practice offense.<br>Build defense.<br><em>Stay inside the wire.</em></h1>
-        <p class="lede">Atez is a community of hackers who train in controlled, disposable environments — never on systems that aren't ours. Learn the craft, break real (isolated) things, and walk away with skills that hold up.</p>
+        <span class="eyebrow"><span class="eyebrow-dot"></span>Recruiting now</span>
+        <h1>We build tools<br>for <span class="accent">ethical hackers.</span></h1>
+        <p class="hero-sub">Atez is a working hacking collective — not a metaphor, not a "learning platform." We ship real utilities, run real labs, and train people to break systems the legal way: with permission, on infrastructure built for it.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">
-            Join Atez on Discord
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-          <a class="btn btn-ghost" href="#range">See the range</a>
+          <a class="btn btn-fill" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+          <a class="btn btn-ghost" href="#wordlist">Use the tools →</a>
         </div>
+        <p class="hero-note"><b>Platform note:</b> The HackPack currently targets Windows 10/11 only.</p>
       </div>
 
-      <div class="scope" aria-hidden="true">
-        <span class="scope-label">SECTOR<b>ATZ-01</b></span>
-        <span class="scope-label br">ACTIVE LANES<b id="laneCount">06</b></span>
-        <svg viewBox="0 0 400 400">
-          <defs>
-            <radialGradient id="sweepFade" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#5EEAD4" stop-opacity="0.55"/>
-              <stop offset="100%" stop-color="#5EEAD4" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <circle cx="200" cy="200" r="170" stroke="#223038" fill="none" stroke-width="1"/>
-          <circle cx="200" cy="200" r="120" stroke="#223038" fill="none" stroke-width="1"/>
-          <circle cx="200" cy="200" r="70" stroke="#223038" fill="none" stroke-width="1"/>
-          <line x1="200" y1="30" x2="200" y2="370" stroke="#223038" stroke-width="1"/>
-          <line x1="30" y1="200" x2="370" y2="200" stroke="#223038" stroke-width="1"/>
-
-          <g transform="translate(200,200)">
-            <g>
-              <path d="M0 0 L0 -170 A170 170 0 0 1 40 -166 Z" fill="url(#sweepFade)">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>
-              </path>
-            </g>
-          </g>
-
-          <circle cx="240" cy="120" r="4" fill="#FFB454"/>
-          <circle cx="150" cy="260" r="4" fill="#5EEAD4"/>
-          <circle cx="280" cy="240" r="4" fill="#5EEAD4"/>
-          <circle cx="140" cy="150" r="4" fill="#FFB454"/>
-        </svg>
+      <div class="term">
+        <div class="term-bar">
+          <div class="term-dot" style="background:#ff5f56"></div>
+          <div class="term-dot" style="background:#ffbd2e"></div>
+          <div class="term-dot" style="background:#27c93f"></div>
+          <span class="term-title">C:\Atez&gt;</span>
+        </div>
+        <div class="term-body">
+          <div class="line"><span class="prompt">$</span> whoami</div>
+          <div class="line out">Atez — hacking collective</div>
+          <div class="line"><span class="prompt">$</span> ver</div>
+          <div class="line out">Windows 10/11 required</div>
+          <div class="line"><span class="prompt">$</span> ls tools/</div>
+          <div class="line out">encoders/ hashing/ jwt/ subnet/ entropy/ <span class="cursor"></span></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ABOUT -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- ARSENAL -->
+  <section class="section wrap" id="wordlist">
+    <div class="sec-head">
+      <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>The Arsenal</span>
+      <h2>HackPack Tools</h2>
+      <p>Our little Arsenal provided by Atez.</p>
+    </div>
+        <div class="compat-note">⚠ HackPack Tools are only compatible with Windows 10/11</div>
+    <div class="wordlist-box">
+      <div class="wordlist-grid" id="wordlistGrid">
+        <div class="wordlist-item"><span class="idx">01</span>Redtiger Tools v1.0</div>
+        <div class="wordlist-item"><span class="idx">02</span>Redtiger Tools v6.6</div>
+        <div class="wordlist-item"><span class="idx">03</span>Void Tools v1</div>
+        <div class="wordlist-item"><span class="idx">04</span>Void Tools v2</div>
+        <div class="wordlist-item"><span class="idx">05</span>Win 10 UAC Bypasser</div>
+        <div class="wordlist-item"><span class="idx">06</span>Ddos_Websites.bat</div>
+        <div class="wordlist-item"><span class="idx">07</span>doxxer.py</div>
+        <div class="wordlist-item"><span class="idx">08</span>IPTOOLKIT.bat</div>
+        <div class="wordlist-item"><span class="idx">09</span>Webhook_deleter.py</div>
+        <div class="wordlist-item"><span class="idx">10</span>empty</div>
+        <div class="wordlist-item"><span class="idx">11</span>empty</div>
+        <div class="wordlist-item"><span class="idx">12</span>empty</div>
+        <div class="wordlist-item"><span class="idx">13</span>empty</div>
+        <div class="wordlist-item"><span class="idx">14</span>empty</div>
+        <div class="wordlist-item"><span class="idx">15</span>empty</div>
+        <div class="wordlist-item"><span class="idx">16</span>empty</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section wrap" id="arsenal">
+    <div class="sec-head">
+      <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>The Encoder/Decoder</span>
+      <h2>Actual tools. Not a mood board.</h2>
+      <p>Everything below runs locally in your browser — nothing you type is sent anywhere. These are the same categories of utilities you'll use constantly once you're past the basics.</p>
+    </div>
+
+    <div class="arsenal">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="encode">Encode / Decode</button>
+        <button class="tab-btn" data-tab="hash">Hash Generator</button>
+        <button class="tab-btn" data-tab="jwt">JWT Decoder</button>
+        <button class="tab-btn" data-tab="subnet">Subnet Calc</button>
+        <button class="tab-btn" data-tab="entropy">Password Entropy</button>
+      </div>
+
+      <div class="tab-panel active" id="panel-encode">
+        <div class="row">
+          <div>
+            <span class="field-label">Format</span>
+            <select id="encFormat">
+              <option value="base64">Base64</option>
+              <option value="url">URL</option>
+              <option value="hex">Hex</option>
+              <option value="binary">Binary</option>
+            </select>
+          </div>
+          <button class="mini-btn" id="encBtn">Encode</button>
+          <button class="mini-btn" id="decBtn">Decode</button>
+        </div>
+        <span class="field-label">Input</span>
+        <textarea id="encInput" rows="3" placeholder="Paste text here..."></textarea>
+        <div style="height:14px"></div>
+        <span class="field-label">Output</span>
+        <div class="result-box" id="encOutput">—</div>
+      </div>
+
+      <div class="tab-panel" id="panel-hash">
+        <span class="field-label">Input</span>
+        <textarea id="hashInput" rows="3" placeholder="Text to hash..."></textarea>
+        <div class="row" style="margin-top:14px">
+          <button class="mini-btn" data-alg="SHA-1">SHA-1</button>
+          <button class="mini-btn" data-alg="SHA-256">SHA-256</button>
+          <button class="mini-btn" data-alg="SHA-384">SHA-384</button>
+          <button class="mini-btn" data-alg="SHA-512">SHA-512</button>
+        </div>
+        <span class="field-label">Digest</span>
+        <div class="result-box" id="hashOutput">—</div>
+      </div>
+
+      <div class="tab-panel" id="panel-jwt">
+        <span class="field-label">Token</span>
+        <textarea id="jwtInput" rows="3" placeholder="eyJhbGciOi..."></textarea>
+        <div class="row" style="margin-top:14px">
+          <button class="mini-btn" id="jwtBtn">Decode</button>
+        </div>
+        <div class="grid2">
+          <div>
+            <span class="field-label">Header</span>
+            <div class="result-box" id="jwtHeader">—</div>
+          </div>
+          <div>
+            <span class="field-label">Payload</span>
+            <div class="result-box" id="jwtPayload">—</div>
+          </div>
+        </div>
+        <p class="note">Decodes only — this does not verify the signature. Never paste a token you don't own.</p>
+      </div>
+
+      <div class="tab-panel" id="panel-subnet">
+        <span class="field-label">IP / CIDR</span>
+        <input type="text" id="subnetInput" placeholder="192.168.1.10/24">
+        <div class="row" style="margin-top:14px">
+          <button class="mini-btn" id="subnetBtn">Calculate</button>
+        </div>
+        <div class="subnet-out" id="subnetOutput"></div>
+      </div>
+
+      <div class="tab-panel" id="panel-entropy">
+        <span class="field-label">Test a password</span>
+        <input type="text" id="entropyInput" placeholder="Type here...">
+        <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%"></div></div>
+        <div class="result-box" id="entropyOutput" style="margin-top:14px">—</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section class="section wrap" id="modules">
+    <div class="sec-head">
+      <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>Modules</span>
+      <h2>Six disciplines.</h2>
+      <p>Beyond the browser tools above, members get access to full Hacking environments built around the same industry-standard software cybersecurity people use — spun up per session, wiped after. All images run on Windows 10/11.</p>
+    </div>
+    <div class="modules">
+      <div class="module">
+        <span class="module-id">MOD // RECON</span>
+        <h3>Reconnaissance</h3>
+        <p>Enumerate hosts and services inside a closed VPN(Soon) before touching anything else.</p>
+        <div class="module-tools">
+          <a href="https://nmap.org/" target="_blank" rel="noopener">Nmap</a>
+          <a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a>
+        </div>
+      </div>
+      <div class="module">
+        <span class="module-id">MOD // WEB</span>
+        <h3>Web Exploitation</h3>
+        <p>Work injection, auth, and logic flaws on deliberately vulnerable apps built for practice.</p>
+        <div class="module-tools">
+          <a href="https://portswigger.net/burp/communitydownload" target="_blank" rel="noopener">Burp Suite CE</a>
+          <a href="https://owasp.org/www-project-zap/" target="_blank" rel="noopener">OWASP ZAP</a>
+        </div>
+      </div>
+      <div class="module">
+        <span class="module-id">MOD // CRYPTO</span>
+        <h3>Cryptography</h3>
+        <p>Break intentionally weak ciphers and encodings to see how real implementations fail.</p>
+        <div class="module-tools">
+          <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">CyberChef</a>
+          <a href="https://www.openssl.org/" target="_blank" rel="noopener">OpenSSL</a>
+        </div>
+      </div>
+      <div class="module">
+        <span class="module-id">MOD // FORENSICS</span>
+        <h3>Digital Forensics</h3>
+        <p>Trace staged incidents through disk images, memory captures, and packet dumps.</p>
+        <div class="module-tools">
+          <a href="https://www.volatilityfoundation.org/" target="_blank" rel="noopener">Volatility</a>
+          <a href="https://www.autopsy.com/" target="_blank" rel="noopener">Autopsy</a>
+        </div>
+      </div>
+      <div class="module">
+        <span class="module-id">MOD // REVERSING</span>
+        <h3>Reverse Engineering</h3>
+        <p>Pull apart practice binaries to understand compiled logic and protection schemes.</p>
+        <div class="module-tools">
+          <a href="https://ghidra-sre.org/" target="_blank" rel="noopener">Ghidra</a>
+          <a href="https://x64dbg.com/" target="_blank" rel="noopener">x64dbg</a>
+        </div>
+      </div>
+      <div class="module">
+        <span class="module-id">MOD // RED TEAM</span>
+        <h3>Detection &amp; Defense</h3>
+        <p>Build detections for the attacks run in every other module — logging, alerting, response.</p>
+        <div class="module-tools">
+          <a href="https://www.zeek.org/" target="_blank" rel="noopener">Zeek</a>
+          <a href="https://www.security-onion.net/" target="_blank" rel="noopener">Security Onion</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section wrap" id="how">
+    <div class="sec-head">
+      <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>How it works</span>
+      <h2>From Harmeless to capable</h2>
+      <p>prior experience required. You need to know the basics at least.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-tag">STEP 01</span>
+        <div><h3>Join the Discord</h3><p>That's the front door. Introduce yourself, get a mate, and get access to the HackPack.</p></div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 02</span>
+        <div><h3>Spin up a Tool</h3><p>Every Tool runs locally on your computer. Nothing you touch is production.</p></div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 03</span>
+        <div><h3>Work with the crew</h3><p>Pair up in voice, compare approaches, get unstuck faster. Mentors sit in on most sessions.</p></div>
+      </div>
+      <div class="step">
+        <span class="step-tag">STEP 04</span>
+        <div><h3>Take it to a wave</h3><p>Once you're comfortable, you can participate in wave.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRINCIPLES -->
   <section class="section wrap" id="about">
-    <div class="section-head">
-      <span class="tag">Why Atez exists</span>
-      <h2>Security skills only mean something if they're earned honestly.</h2>
-      <p>We run labs, CTFs, and study groups so members can learn how systems break — legally, safely, and with people who'll explain the "why," not just the "how."</p>
+    <div class="sec-head">
+      <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>Why Atez exists</span>
+      <h2>Skills only count if they're earned honestly</h2>
+      <p>We build/collect tools so members learn how systems break — with people who explain the "why," not just the "how."</p>
     </div>
     <div class="principles">
       <div class="principle">
         <span class="idx">SCOPE</span>
         <h3>Consent, always</h3>
-        <p>Every exercise runs on infrastructure we own or that's explicitly built for training. No live targets, no exceptions.</p>
+        <p>Every Tool is made to target live targets. no exceptions.</p>
       </div>
       <div class="principle">
         <span class="idx">METHOD</span>
         <h3>Understand before you exploit</h3>
-        <p>We teach the underlying mechanics — protocols, memory, logic flaws — so members can reason about new problems, not just replay steps.</p>
+        <p>We teach the underlying mechanics so members can reason about new problems, not just replay steps.</p>
       </div>
       <div class="principle">
         <span class="idx">PURPOSE</span>
         <h3>Defense is the point</h3>
-        <p>Every offensive technique we cover pairs with the detection and hardening side. Breaking things responsibly is how you learn to protect them.</p>
+        <p>Every offensive technique we cover pairs with the detection and hardening side of the same problem.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- RANGE / TOOL CATEGORIES -->
-  <section class="section wrap" id="range">
-    <div class="section-head">
-      <span class="tag">The Range</span>
-      <h2>Six lanes. All sandboxed.</h2>
-      <p>Each lane is a self-contained environment members spin up on demand — vulnerable-by-design boxes, isolated networks, and snapshots that reset after every session. Below are the categories members work in and the established, industry-standard tools each lane is built around.</p>
-    </div>
-
-    <div class="range-grid">
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 01 — RECON</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Reconnaissance &amp; Mapping</h3>
-        <p>Enumerate hosts, services, and attack surface inside a closed lab network before touching anything else.</p>
-        <div class="station-tools">
-          <a href="https://nmap.org/" target="_blank" rel="noopener">Nmap</a>
-          <a href="https://www.wireshark.org/" target="_blank" rel="noopener">Wireshark</a>
-          <a href="https://github.com/OWASP/Amass" target="_blank" rel="noopener">Amass</a>
-        </div>
-      </div>
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 02 — WEB</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Web Application Security</h3>
-        <p>Work through injection, auth, and logic flaws on deliberately vulnerable apps built for practice.</p>
-        <div class="station-tools">
-          <a href="https://portswigger.net/burp/communitydownload" target="_blank" rel="noopener">Burp Suite CE</a>
-          <a href="https://owasp.org/www-project-zap/" target="_blank" rel="noopener">OWASP ZAP</a>
-          <a href="https://github.com/digininja/DVWA" target="_blank" rel="noopener">DVWA</a>
-        </div>
-      </div>
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 03 — CRYPTO</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Cryptography &amp; Encoding</h3>
-        <p>Break intentionally weak ciphers and encodings to understand how and why real implementations fail.</p>
-        <div class="station-tools">
-          <a href="https://gchq.github.io/CyberChef/" target="_blank" rel="noopener">CyberChef</a>
-          <a href="https://www.openssl.org/" target="_blank" rel="noopener">OpenSSL</a>
-          <a href="https://www.dcode.fr/" target="_blank" rel="noopener">dCode</a>
-        </div>
-      </div>
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 04 — FORENSICS</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Digital Forensics</h3>
-        <p>Trace incidents through disk images, memory captures, and packet dumps from staged scenarios.</p>
-        <div class="station-tools">
-          <a href="https://www.sans.org/tools/sift-workstation/" target="_blank" rel="noopener">SIFT Workstation</a>
-          <a href="https://www.volatilityfoundation.org/" target="_blank" rel="noopener">Volatility</a>
-          <a href="https://www.autopsy.com/" target="_blank" rel="noopener">Autopsy</a>
-        </div>
-      </div>
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 05 — REVERSING</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Reverse Engineering</h3>
-        <p>Pull apart binaries built for practice to understand compiled logic, obfuscation, and protection schemes.</p>
-        <div class="station-tools">
-          <a href="https://ghidra-sre.org/" target="_blank" rel="noopener">Ghidra</a>
-          <a href="https://github.com/radareorg/radare2" target="_blank" rel="noopener">radare2</a>
-          <a href="https://x64dbg.com/" target="_blank" rel="noopener">x64dbg</a>
-        </div>
-      </div>
-
-      <div class="station">
-        <div class="station-head">
-          <span class="station-lane">LANE 06 — DEFENSE</span>
-          <span class="station-status">Sandboxed</span>
-        </div>
-        <h3>Blue Team &amp; Detection</h3>
-        <p>Build detections for the attacks run in the other lanes — logging, alerting, and incident response drills.</p>
-        <div class="station-tools">
-          <a href="https://www.elastic.co/security" target="_blank" rel="noopener">Elastic Security</a>
-          <a href="https://www.zeek.org/" target="_blank" rel="noopener">Zeek</a>
-          <a href="https://www.security-onion.net/" target="_blank" rel="noopener">Security Onion</a>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section wrap" id="process">
-    <div class="section-head">
-      <span class="tag">How it works</span>
-      <h2>From "curious" to "capable," on a real path.</h2>
-      <p>No prior experience required — every lane has an entry point for beginners and a harder track once you're ready.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <span class="step-tag">STEP 01</span>
-        <div>
-          <h3>Join the Discord</h3>
-          <p>That's the front door. Introduce yourself, pick a lane, and get access to our lab guides and scheduled sessions.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-tag">STEP 02</span>
-        <div>
-          <h3>Spin up a sandbox</h3>
-          <p>Each exercise runs in an isolated VM or container built specifically for it. Nothing you touch is a production system, ever.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-tag">STEP 03</span>
-        <div>
-          <h3>Work the lane with others</h3>
-          <p>Pair up in voice, compare approaches, and get unstuck faster than you would solo. Mentors sit in on most sessions.</p>
-        </div>
-      </div>
-      <div class="step">
-        <span class="step-tag">STEP 04</span>
-        <div>
-          <h3>Take it to a CTF</h3>
-          <p>Once you're comfortable, we run and compete in capture-the-flag events as a team — the legal, structured version of the real thing.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="section wrap">
-    <div class="stats">
-      <div class="stat"><div class="n">6</div><div class="l">Active lanes</div></div>
-      <div class="stat"><div class="n">0</div><div class="l">Production systems touched</div></div>
-      <div class="stat"><div class="n">24/7</div><div class="l">Lab availability</div></div>
-      <div class="stat"><div class="n">100%</div><div class="l">Isolated by default</div></div>
     </div>
   </section>
 
   <!-- JOIN -->
   <section class="join wrap" id="join">
-    <span class="tag">Ready when you are</span>
-    <h2>The range is open.</h2>
-    <p>Come learn with people who'd rather explain a concept twice than let you memorize a checklist.</p>
-    <a class="btn btn-primary btn-join" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">
-      Join Atez
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <div class="join-meta">discord.gg/F2MMNBTkeQ</div>
+    <span class="tag"><span class="chev"><svg viewBox="0 0 100 100"><path d="M20 80 L50 20 L80 80" fill="none" stroke="currentColor" stroke-width="14" stroke-linejoin="miter"/></svg></span>Ready when you are</span>
+    <h2>The arsenal's open.</h2>
+    <p>Come build with people who'd rather explain a concept twice than let you memorize a checklist.</p>
+    <a class="btn btn-fill" href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
+    <div class="join-meta">discord.gg/F2MMNBTkeQ · Windows 10/11</div>
   </section>
 
 </main>
@@ -580,15 +582,146 @@
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <img src="https://cdn.discordapp.com/icons/1519795427699064872/a26e0d6d732b41db27454b9c6e62535e.webp?size=512" alt="Atez logo">
-      <span>ATEZ — Ethical hacking, done in the open</span>
+      <span>ATEZ — Hacking, done in the open · Windows 10/11</span>
     </div>
     <div class="footer-links">
-      <a href="#about">About</a>
-      <a href="#range">The Range</a>
+      <a href="#wordlist">Arsenal</a>
+      <a href="#modules">Modules</a>
       <a href="https://discord.gg/F2MMNBTkeQ" target="_blank" rel="noopener">Join Atez</a>
     </div>
   </div>
 </footer>
+
+<script>
+  const tickerItems = [
+    'MODULE:RECON <b>online</b>', 'MODULE:WEB <b>online</b>', 'MODULE:CRYPTO <b>online</b>',
+    'MODULE:FORENSICS <b>online</b>', 'MODULE:REVERSING <b>online</b>', 'MODULE:RED-TEAM <b>online</b>',
+    'platform: <b>windows 10/11 only</b>', 'Tools: <b>ready</b>'
+  ];
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML = tickerItems.concat(tickerItems).map(t => `<span>${t}</span>`).join('');
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function toHex(str){ return Array.from(new TextEncoder().encode(str)).map(b => b.toString(16).padStart(2,'0')).join(' '); }
+  function fromHex(str){ const bytes = str.trim().split(/\s+/).map(h => parseInt(h,16)); return new TextDecoder().decode(new Uint8Array(bytes)); }
+  function toBinary(str){ return Array.from(new TextEncoder().encode(str)).map(b => b.toString(2).padStart(8,'0')).join(' '); }
+  function fromBinary(str){ const bytes = str.trim().split(/\s+/).map(b => parseInt(b,2)); return new TextDecoder().decode(new Uint8Array(bytes)); }
+
+  document.getElementById('encBtn').addEventListener('click', () => {
+    const fmt = document.getElementById('encFormat').value;
+    const input = document.getElementById('encInput').value;
+    let out = '';
+    try{
+      if(fmt==='base64') out = btoa(unescape(encodeURIComponent(input)));
+      else if(fmt==='url') out = encodeURIComponent(input);
+      else if(fmt==='hex') out = toHex(input);
+      else if(fmt==='binary') out = toBinary(input);
+    }catch(e){ out = 'Error: ' + e.message; }
+    document.getElementById('encOutput').textContent = out || '—';
+  });
+  document.getElementById('decBtn').addEventListener('click', () => {
+    const fmt = document.getElementById('encFormat').value;
+    const input = document.getElementById('encInput').value;
+    let out = '';
+    try{
+      if(fmt==='base64') out = decodeURIComponent(escape(atob(input)));
+      else if(fmt==='url') out = decodeURIComponent(input);
+      else if(fmt==='hex') out = fromHex(input);
+      else if(fmt==='binary') out = fromBinary(input);
+    }catch(e){ out = 'Error: could not decode with this format.'; }
+    document.getElementById('encOutput').textContent = out || '—';
+  });
+
+  document.querySelectorAll('#panel-hash [data-alg]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = document.getElementById('hashInput').value;
+      const enc = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest(btn.dataset.alg, enc);
+      const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+      document.getElementById('hashOutput').textContent = btn.dataset.alg + ':  ' + hex;
+    });
+  });
+
+  function b64urlDecode(str){
+    str = str.replace(/-/g,'+').replace(/_/g,'/');
+    while(str.length % 4) str += '=';
+    return decodeURIComponent(escape(atob(str)));
+  }
+  document.getElementById('jwtBtn').addEventListener('click', () => {
+    const token = document.getElementById('jwtInput').value.trim();
+    const parts = token.split('.');
+    if(parts.length < 2){
+      document.getElementById('jwtHeader').textContent = 'Invalid token';
+      document.getElementById('jwtPayload').textContent = 'Invalid token';
+      return;
+    }
+    try{
+      const header = JSON.stringify(JSON.parse(b64urlDecode(parts[0])), null, 2);
+      const payload = JSON.stringify(JSON.parse(b64urlDecode(parts[1])), null, 2);
+      document.getElementById('jwtHeader').textContent = header;
+      document.getElementById('jwtPayload').textContent = payload;
+    }catch(e){
+      document.getElementById('jwtHeader').textContent = 'Could not parse';
+      document.getElementById('jwtPayload').textContent = 'Could not parse';
+    }
+  });
+
+  document.getElementById('subnetBtn').addEventListener('click', () => {
+    const val = document.getElementById('subnetInput').value.trim();
+    const out = document.getElementById('subnetOutput');
+    const m = val.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/);
+    if(!m){ out.innerHTML = '<div><span>error</span><b>use format 192.168.1.10/24</b></div>'; return; }
+    const octets = [m[1],m[2],m[3],m[4]].map(Number);
+    const cidr = Number(m[5]);
+    if(octets.some(o => o>255) || cidr>32){ out.innerHTML = '<div><span>error</span><b>invalid IP or CIDR</b></div>'; return; }
+    const ipInt = ((octets[0]<<24) | (octets[1]<<16) | (octets[2]<<8) | octets[3]) >>> 0;
+    const maskInt = cidr===0 ? 0 : (0xFFFFFFFF << (32-cidr)) >>> 0;
+    const netInt = (ipInt & maskInt) >>> 0;
+    const bcastInt = (netInt | (~maskInt >>> 0)) >>> 0;
+    const toIp = n => [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+    const total = Math.pow(2,32-cidr);
+    const usable = cidr>=31 ? total : Math.max(total-2,0);
+    out.innerHTML = `
+      <div><span>Network</span><b>${toIp(netInt)}</b></div>
+      <div><span>Broadcast</span><b>${toIp(bcastInt)}</b></div>
+      <div><span>Netmask</span><b>${toIp(maskInt)}</b></div>
+      <div><span>Usable Hosts</span><b>${usable.toLocaleString()}</b></div>
+      <div><span>First Usable</span><b>${cidr>=31?toIp(netInt):toIp(netInt+1)}</b></div>
+      <div><span>Last Usable</span><b>${cidr>=31?toIp(bcastInt):toIp(bcastInt-1)}</b></div>
+    `;
+  });
+
+  const entropyInput = document.getElementById('entropyInput');
+  entropyInput.addEventListener('input', () => {
+    const val = entropyInput.value;
+    let pool = 0;
+    if(/[a-z]/.test(val)) pool += 26;
+    if(/[A-Z]/.test(val)) pool += 26;
+    if(/[0-9]/.test(val)) pool += 10;
+    if(/[^a-zA-Z0-9]/.test(val)) pool += 33;
+    const bits = val.length && pool ? Math.round(val.length * Math.log2(pool)) : 0;
+    let label = 'empty', color = '#8a6a6a', pct = 0;
+    if(val.length){
+      if(bits < 28){ label='very weak'; color='#e21313'; pct=20; }
+      else if(bits < 36){ label='weak'; color='#ff7a45'; pct=40; }
+      else if(bits < 60){ label='reasonable'; color='#ffb454'; pct=65; }
+      else if(bits < 80){ label='strong'; color='#f5e9e9'; pct=85; }
+      else { label='very strong'; color='#ffffff'; pct=100; }
+    }
+    document.getElementById('strengthFill').style.width = pct + '%';
+    document.getElementById('strengthFill').style.background = color;
+    document.getElementById('entropyOutput').textContent =
+      val.length ? `~${bits} bits of entropy — ${label}. (Computed locally, never sent anywhere.)` : '—';
+  });
+</script>
 
 </body>
 </html>
